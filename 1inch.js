@@ -5,14 +5,17 @@ const app = express();
 const path = require('path');
 const apiResponse = require("./APIs/apiResponse");
 const router = require("./APIs/routes")
+const { UpdateDataEth } = require("./Controllers/dbController")
 
 // routing APIs
 app.use('/api', router);
 
-
-const { getLastBlockNumber } = require("./Controllers/dbController")
-getLastBlockNumber();
-
+//Update Database
+function updateData() {
+    UpdateDataEth();
+    setTimeout(updateData, 1000 * 60 * 10);
+}
+updateData();
 
 // serving webpage files
 app.use(express.json());

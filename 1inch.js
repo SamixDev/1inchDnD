@@ -13,7 +13,7 @@ app.use('/api', router);
 //Update Database
 function updateData() {
     UpdateDataEth();
-    setTimeout(updateData, 1000 * 60 * 10);
+    setTimeout(updateData, 1000 * 60 * 2);
 }
 updateData();
 

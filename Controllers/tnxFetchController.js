@@ -5,9 +5,9 @@ function getTransfers(starting, ending, chainId) {
 
     axios.get(`${process.env.COV_API}/${chainId}/events/address/
         ${process.env.CHI_ADDRESS}/?starting-block=${starting}
-        &ending-block=${ending}&match=
+        &ending-block=${ending}&page-size=10000&match=
         {decoded.name:"Transfer"}&key=
-        ${process.env.KEY}`)
+        ${process.env.KEY}`, { timeout: 30000 })
         .then(response => {
             switch (chainId) {
                 case 1:
@@ -24,6 +24,9 @@ function getTransfers(starting, ending, chainId) {
                     break;
                 default:
             }
+        }).catch(function (error) {
+            // handle error
+            console.log(error);
         });
 
 }
@@ -46,11 +49,13 @@ async function saveTnxDb(items, table) {
         '${items[i].decoded.params[1].value}',
         ${items[i].decoded.params[2].value});`
         connect(sql).then(resp => {
-            console.log("saved to db @ " + Date.now())
+            //console.log("saved to db @ " + Date.now())
         }).catch(err => {
             console.log(err)
         });
     }
+    var ts = new Date();
+    console.log("saved to db @ " + ts.toString())
 }
 
 async function checkType(val0, val1) {

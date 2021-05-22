@@ -2,7 +2,7 @@
 const axios = require('axios');
 const { connect } = require('../DataBase/connectSQL');
 
-function getTransfers(starting, ending, chainId) {
+async function getTransfers(starting, ending, chainId) {
 
     axios.get(`${process.env.COV_API}/${chainId}/events/address/
         ${process.env.CHI_ADDRESS}/?starting-block=${starting}
@@ -12,19 +12,23 @@ function getTransfers(starting, ending, chainId) {
         .then(response => {
             switch (chainId) {
                 case 1: // eth
+                    //   console.log("Fetched data on ETH ")
                     saveTnxDb(response.data.data.items, 'transactions_eth')
                     break;
                 case 56: // bsc
+                    //   console.log("Fetched data on BSC ")
                     saveTnxDb(response.data.data.items, 'transactions_bsc')
                     break;
                 case 137: // polygon
-                    // code block
+                    //    console.log("Fetched data on POLYGON ")
+                    saveTnxDb(response.data.data.items, 'transactions_pol')
                     break;
                 default:
             }
         }).catch(function (error) {
-            // handle error
-            console.log(error);
+            if (error.code === 'ECONNABORTED') {
+                console.log(`A timeout happend on url ${error.config.url}`)
+            }
         });
 
 };
@@ -53,7 +57,7 @@ async function saveTnxDb(items, table) {
         });
     };
     var ts = new Date();
-    console.log("saved to db " + table + " @ " + ts.toString());
+    console.log("saved " + items.length + " tnx to db " + table + " @ " + ts.toString());
 }
 
 async function checkType(val0, val1) {

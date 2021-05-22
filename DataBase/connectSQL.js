@@ -24,7 +24,7 @@ async function connect(sql) {
     return new Promise((resolve, reject) => {
         pool.query(sql, (err, results) => {
             if (err) {
-                console.log(err)
+                //  console.log(err)
                 reject(err);
             } else {
                 resolve(results);

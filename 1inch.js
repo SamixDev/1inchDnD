@@ -12,6 +12,7 @@ app.use('/api', router);
 
 //Update Database
 function updateData() {
+    console.log("------------------------------------------------")
     UpdateDataEth();
     UpdateDataBsc();
     UpdateDataPol();

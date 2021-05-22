@@ -57,7 +57,7 @@ async function saveTnxDb(items, table) {
         });
     };
     var ts = new Date();
-    console.log("saved " + items.length + " tnx to db " + table + " @ " + ts.toString());
+    console.log(`saved \x1b[36m${items.length}\x1b[0m tnx to DB \x1b[32m${table}\x1b[0m @ \x1b[34m${ts.toUTCString()}\x1b[0m`);
 }
 
 async function checkType(val0, val1) {

@@ -1,3 +1,4 @@
+'use strict';
 const axios = require('axios');
 const { connect } = require('../DataBase/connectSQL');
 
@@ -10,16 +11,13 @@ function getTransfers(starting, ending, chainId) {
         ${process.env.KEY}`, { timeout: 30000 })
         .then(response => {
             switch (chainId) {
-                case 1:
-                    saveTnxDb(response.data.data.items, 'transactionsEth')
+                case 1: // eth
+                    saveTnxDb(response.data.data.items, 'transactions_eth')
                     break;
-                case 56:
-                    // code block
+                case 56: // bsc
+                    saveTnxDb(response.data.data.items, 'transactions_bsc')
                     break;
-                case 137:
-                    // code block
-                    break;
-                case 43114:
+                case 137: // polygon
                     // code block
                     break;
                 default:
@@ -29,7 +27,7 @@ function getTransfers(starting, ending, chainId) {
             console.log(error);
         });
 
-}
+};
 
 async function saveTnxDb(items, table) {
 
@@ -53,9 +51,9 @@ async function saveTnxDb(items, table) {
         }).catch(err => {
             console.log(err)
         });
-    }
+    };
     var ts = new Date();
-    console.log("saved to db @ " + ts.toString())
+    console.log("saved to db " + table + " @ " + ts.toString());
 }
 
 async function checkType(val0, val1) {
@@ -66,6 +64,6 @@ async function checkType(val0, val1) {
         type = "Burn";
     }
     return type;
-}
+};
 
 module.exports = { getTransfers }

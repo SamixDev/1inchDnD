@@ -5,7 +5,7 @@ const app = express();
 const path = require('path');
 const apiResponse = require("./APIs/apiResponse");
 const router = require("./APIs/routes")
-const { UpdateDataEth } = require("./Controllers/dbController")
+const { UpdateDataEth, UpdateDataBsc } = require("./Controllers/dbController")
 
 // routing APIs
 app.use('/api', router);
@@ -13,6 +13,7 @@ app.use('/api', router);
 //Update Database
 function updateData() {
     UpdateDataEth();
+    UpdateDataBsc();
     setTimeout(updateData, 1000 * 60 * 2);
 }
 updateData();

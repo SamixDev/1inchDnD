@@ -3,7 +3,8 @@ require('dotenv').config();
 
 
 // Create a connection to the database
-var connection = sql.createConnection({
+var pool = sql.createPool({
+    connectionLimit: 50,
     host: process.env.DB_HOST, // i use "localhost"
     user: process.env.DB_USER, //mysql username
     password: process.env.DB_PASS, //mysql password
@@ -12,17 +13,18 @@ var connection = sql.createConnection({
 });
 
 // open the MySQL connection
-connection.connect(err => {
-    if (err) throw err;
-    console.log("Successfully connected to the database.");
-});
+// pool.connect(err => {
+//     if (err) throw err;
+//     console.log("Successfully connected to the database.");
+// });
 
 //async function to connect to DB with given sql query
 async function connect(sql) {
 
     return new Promise((resolve, reject) => {
-        connection.query(sql, (err, results) => {
+        pool.query(sql, (err, results) => {
             if (err) {
+                console.log(err)
                 reject(err);
             } else {
                 resolve(results);

@@ -15,6 +15,17 @@ exports.successResponseWithData = function (res, msg, data) {
 	return res.status(200).json(resData);
 };
 
+// custom by me
+exports.successResponseWithDataAndTotal = function (res, msg, data, total) {
+	var resData = {
+		status: 1,
+		message: msg,
+		total: total,
+		data: data
+	};
+	return res.status(200).json(resData);
+};
+
 exports.ErrorResponse = function (res, msg) {
 	var data = {
 		status: 0,

@@ -27,7 +27,11 @@ router.get('/tnx', async (req, res) => {
             dbName = 'transactions_eth';
     }
     transactions(interval, dbName, type).then(({ data, msg }) => {
-        apiResponse.successResponseWithData(res, msg, data);
+        let tot = 0;
+        data.forEach(element => {
+            tot += element.value
+        });
+        apiResponse.successResponseWithDataAndTotal(res, msg, data, tot);
     }).catch(err => {
         apiResponse.ErrorResponse(err)
     })
@@ -57,7 +61,11 @@ router.get('/tnxCount', async (req, res) => {
             dbName = 'transactions_eth';
     }
     transactionsNumber(interval, dbName, type).then(({ data, msg }) => {
-        apiResponse.successResponseWithData(res, msg, data);
+        let tot = 0;
+        data.forEach(element => {
+            tot += element.value
+        });
+        apiResponse.successResponseWithDataAndTotal(res, msg, data, tot);
     }).catch(err => {
         apiResponse.ErrorResponse(err)
     })

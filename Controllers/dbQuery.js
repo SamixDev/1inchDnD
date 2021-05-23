@@ -17,8 +17,8 @@ async function transactions(interval, dbName, type) {
                     sum(val2) as value
                     FROM ${dbName}
                     where tx_type = '${type}'
-                    GROUP BY YEARWEEK(block_signed_at, 0)
-                    ORDER BY YEARWEEK(block_signed_at, 0);`
+                    GROUP BY date
+                    ORDER BY date;`
                 break;
             case "Monthly":
                 sql = `SELECT LEFT(block_signed_at, 7) AS date, sum(val2) as value
@@ -65,8 +65,8 @@ async function transactionsNumber(interval, dbName, type) {
                     count(*) as value
                     FROM ${dbName}
                     where tx_type = '${type}'
-                    GROUP BY YEARWEEK(block_signed_at, 0)
-                    ORDER BY YEARWEEK(block_signed_at, 0);`
+                    GROUP BY date
+                    ORDER BY date;`
                 break;
             case "Monthly":
                 sql = `SELECT LEFT(block_signed_at, 7) AS date, count(*) as value

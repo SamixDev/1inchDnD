@@ -9,7 +9,7 @@ async function UpdateDataEth() {
             console.log("no data on ETH")
             getTransfers(Number(process.env.STARTING_BLOCK_ETH), Number(process.env.STARTING_BLOCK_ETH) + 500000, 1)
         } else {
-            console.log("found data height ", resp[0].max, " on ETH chain.")
+            console.log("last block height in DB", resp[0].max, " on ETH chain.")
             getTransfers(Number(resp[0].max) + 1, Number(resp[0].max) + 500000, 1)
         }
     }).catch(err => {

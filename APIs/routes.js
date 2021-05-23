@@ -9,9 +9,8 @@ router.get('/tnx', async (req, res) => {
     let interval = req.query.interval
     let type = req.query.type
     let dbName;
-    let intervalQuery;
     chainId === undefined ? 1 : chainId = Number(chainId.replace(/'|"/g, ""))
-    interval === undefined ? "monthly" : interval = interval.replace(/'|"/g, "")
+    interval === undefined ? "Monthly" : interval = interval.replace(/'|"/g, "")
     type === undefined ? "Mint" : type = type.replace(/'|"/g, "")
 
     switch (chainId) {
@@ -27,20 +26,7 @@ router.get('/tnx', async (req, res) => {
         default:
             dbName = 'transactions_eth';
     }
-    switch (interval) {
-        case "Daily":
-            intervalQuery = 'LEFT(block_signed_at, 10)';
-            break;
-        case "Weekly":
-            intervalQuery = 'LEFT(block_signed_at, 9)'; // change later
-            break;
-        case "Monthly":
-            intervalQuery = 'LEFT(block_signed_at, 7)';
-            break;
-        default:
-            intervalQuery = 'LEFT(block_signed_at, 7)';
-    }
-    transactions(intervalQuery, dbName, type).then(({ data, msg }) => {
+    transactions(interval, dbName, type).then(({ data, msg }) => {
         apiResponse.successResponseWithData(res, msg, data);
     }).catch(err => {
         apiResponse.ErrorResponse(err)
@@ -53,9 +39,8 @@ router.get('/tnxCount', async (req, res) => {
     let interval = req.query.interval
     let type = req.query.type
     let dbName;
-    let intervalQuery;
     chainId === undefined ? 1 : chainId = Number(chainId.replace(/'|"/g, ""))
-    interval === undefined ? "monthly" : interval = interval.replace(/'|"/g, "")
+    interval === undefined ? "Monthly" : interval = interval.replace(/'|"/g, "")
     type === undefined ? "Mint" : type = type.replace(/'|"/g, "")
 
     switch (chainId) {
@@ -71,20 +56,7 @@ router.get('/tnxCount', async (req, res) => {
         default:
             dbName = 'transactions_eth';
     }
-    switch (interval) {
-        case "Daily":
-            intervalQuery = 'LEFT(block_signed_at, 10)';
-            break;
-        case "Weekly":
-            intervalQuery = 'LEFT(block_signed_at, 9)'; // change later
-            break;
-        case "Monthly":
-            intervalQuery = 'LEFT(block_signed_at, 7)';
-            break;
-        default:
-            intervalQuery = 'LEFT(block_signed_at, 7)';
-    }
-    transactionsNumber(intervalQuery, dbName, type).then(({ data, msg }) => {
+    transactionsNumber(interval, dbName, type).then(({ data, msg }) => {
         apiResponse.successResponseWithData(res, msg, data);
     }).catch(err => {
         apiResponse.ErrorResponse(err)

@@ -1,5 +1,5 @@
 const { connect } = require('../DataBase/connectSQL');
-const { getTransfers } = require("./tnxFetchController")
+const { getTransfers } = require("./tnxFetch")
 require('dotenv').config()
 
 async function UpdateDataEth() {

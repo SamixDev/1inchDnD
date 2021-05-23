@@ -5,7 +5,7 @@ const app = express();
 const path = require('path');
 const apiResponse = require("./APIs/apiResponse");
 const router = require("./APIs/routes")
-const { UpdateDataEth, UpdateDataBsc, UpdateDataPol } = require("./Controllers/dbController")
+const { UpdateDataEth, UpdateDataBsc, UpdateDataPol } = require("./Controllers/dbUpdate")
 
 // routing APIs
 app.use('/api', router);

@@ -2,6 +2,8 @@ const express = require('express');
 const apiResponse = require("./apiResponse");
 const router = express.Router();
 const { transactions, transactionsNumber } = require('../Controllers/dbQuery')
+const axios = require('axios');
+require('dotenv').config();
 
 router.get('/tnx', async (req, res) => {
 
@@ -70,4 +72,30 @@ router.get('/tnxCount', async (req, res) => {
         apiResponse.ErrorResponse(err)
     })
 });
+
+router.get('/stats', async (req, res) => {
+    axios.get(`${process.env.COV_API}/pricing/tickers/?tickers=chi&key=${process.env.KEY}`
+        , { timeout: 30000 })
+        .then(response => {
+            if (response.data && response.data.data && response.data.data.items[0]) {
+                let stats = {
+                    price: Number((response.data.data.items[0].quote_rate).toFixed(5)),
+                    rank: response.data.data.items[0].rank
+                }
+                let msg = "Data Found"
+                apiResponse.successResponseWithData(res, msg, stats);
+            } else {
+                let msg = "Data Unavailable"
+                apiResponse.successResponseWithData(error, msg, { price: 0, rank: 0 })
+            }
+
+        }).catch(function (error) {
+            if (error.code === 'ECONNABORTED') {
+                console.log(`A timeout happend on url ${error.config.url}`)
+            }
+            let msg = "ERROR"
+            apiResponse.ErrorResponse(error, msg)
+        });
+});
+
 module.exports = router;

@@ -42,6 +42,7 @@ async function allTransactions(interval, dbName) {
         let allVals = [...values[0], ...values[1], ...values[2]];
         // get all unique dates
         const uniqueDate = [...new Set(allVals.map(item => item.date))];
+        uniqueDate.sort();
 
         // create new values
         let newVals = [];

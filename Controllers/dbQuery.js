@@ -1,5 +1,80 @@
 const { connect } = require('../DataBase/connectSQL');
 
+// all transactions for a specific chainID
+async function allTransactions(interval, dbName) {
+    const promise1 = new Promise((resolve, reject) => {
+        transactions(interval, dbName, "Mint").then(result => {
+            let finalRes = [];
+            if (result.data.length > 0) {
+                result.data.forEach(element => {
+                    finalRes.push({ date: element.date, valueMint: element.value })
+                });
+            }
+            resolve(finalRes)
+        })
+
+    });
+    const promise2 = new Promise((resolve, reject) => {
+        transactions(interval, dbName, "Burn").then(result => {
+            let finalRes = [];
+            if (result.data.length > 0) {
+                result.data.forEach(element => {
+                    finalRes.push({ date: element.date, valueBurn: element.value })
+                });
+            }
+            resolve(finalRes)
+        })
+    });
+    const promise3 = new Promise((resolve, reject) => {
+        transactions(interval, dbName, "Transfer").then(result => {
+            let finalRes = [];
+            if (result.data.length > 0) {
+                result.data.forEach(element => {
+                    finalRes.push({ date: element.date, valueTransfer: element.value })
+                });
+            }
+            resolve(finalRes)
+        })
+    });
+    let vals = await Promise.all([promise1, promise2, promise3]).then((values) => {
+
+        // join all arrays
+        let allVals = [...values[0], ...values[1], ...values[2]];
+
+        // get all unique dates
+        const uniqueDate = [...new Set(allVals.map(item => item.date))];
+        console.log(uniqueDate)
+
+        // create new values
+        let newVals = [];
+        uniqueDate.forEach(element => {
+            newVals.push({ date: element, mint: 0, burn: 0, transfer: 0 })
+        });
+        console.log(newVals)
+
+        // merge unique dates with new values
+        for (let i = 0; i < allVals.length; i++) {
+            let idx = newVals.findIndex(el => el.date == allVals[i].date)
+            newVals[idx].mint += allVals[i].valueMint ? allVals[i].valueMint : 0;
+            newVals[idx].burn += allVals[i].valueBurn ? allVals[i].valueBurn : 0;
+            newVals[idx].transfer += allVals[i].valueTransfer ? allVals[i].valueTransfer : 0;
+        }
+        console.log(newVals)
+
+        return newVals;
+    }).catch(err => {
+        console.log(err)
+        reject(err)
+    });
+    if (vals.length > 0) {
+        return ({ data: vals, msg: "Found Data" });
+    } else {
+        return ({ data: [], msg: "No Data" });
+    }
+
+};
+
+// Specific transactions for a specific chainID
 async function transactions(interval, dbName, type) {
     return new Promise((resolve, reject) => {
         let sql;
@@ -48,6 +123,7 @@ async function transactions(interval, dbName, type) {
     });
 };
 
+// number of transactions for a specific chainID and type
 async function transactionsNumber(interval, dbName, type) {
     return new Promise((resolve, reject) => {
         let sql;
@@ -95,4 +171,4 @@ async function transactionsNumber(interval, dbName, type) {
     });
 };
 
-module.exports = { transactions, transactionsNumber }
+module.exports = { transactions, transactionsNumber, allTransactions }

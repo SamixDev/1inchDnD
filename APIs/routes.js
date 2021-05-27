@@ -1,9 +1,49 @@
 const express = require('express');
 const apiResponse = require("./apiResponse");
 const router = express.Router();
-const { transactions, transactionsNumber } = require('../Controllers/dbQuery')
+const { transactions, transactionsNumber, allTransactions } = require('../Controllers/dbQuery')
 const axios = require('axios');
 require('dotenv').config();
+
+router.get('/allTnx', async (req, res) => {
+
+    let chainId = req.query.chainId
+    let interval = req.query.interval
+    let dbName;
+    chainId === undefined ? 1 : chainId = Number(chainId.replace(/'|"/g, ""))
+    interval === undefined ? "Monthly" : interval = interval.replace(/'|"/g, "")
+
+    switch (chainId) {
+        case 1: // eth
+            dbName = 'transactions_eth';
+            break;
+        case 56: // bsc
+            dbName = 'transactions_bsc';
+            break;
+        case 137: // polygon
+            dbName = 'transactions_pol';
+            break;
+        default:
+            dbName = 'transactions_eth';
+    }
+    allTransactions(interval, dbName).then(({ data, msg }) => {
+
+        let totalMint = 0;
+        let totalBurn = 0;
+        let totalTransfer = 0;
+        data.forEach(element => {
+            totalMint += element.mint
+            totalBurn += element.burn
+            totalTransfer += element.transfer
+        });
+
+        apiResponse.successResponseWithDataAndAllTotals(res, msg, data, totalMint, totalBurn, totalTransfer);
+
+    }).catch(err => {
+        console.log("error")
+        apiResponse.ErrorResponse(err)
+    })
+});
 
 router.get('/tnx', async (req, res) => {
 

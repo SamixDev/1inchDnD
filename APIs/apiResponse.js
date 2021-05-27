@@ -25,6 +25,19 @@ exports.successResponseWithDataAndTotal = function (res, msg, data, total) {
 	};
 	return res.status(200).json(resData);
 };
+exports.successResponseWithDataAndAllTotals = function (res, msg, data, totalMint, totalBurn, totalTransfer) {
+	var resData = {
+		status: 1,
+		message: msg,
+		totalMint: totalMint,
+		totalBurn: totalBurn,
+		totalTransfer: totalTransfer,
+		data: data
+	};
+	return res.status(200).json(resData);
+};
+
+//////////////////////////////////////////////////
 
 exports.ErrorResponse = function (res, msg) {
 	var data = {

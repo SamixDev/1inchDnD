@@ -45,8 +45,10 @@ async function allTransactions(interval, dbName) {
 
         // create new values
         let newVals = [];
+        let newCounts = [];
         uniqueDate.forEach(element => {
             newVals.push({ date: element, mint: 0, burn: 0, transfer: 0 })
+            newCounts.push({ date: element, mint: 0, burn: 0, transfer: 0 })
         });
 
         // merge unique dates with new values
@@ -55,19 +57,16 @@ async function allTransactions(interval, dbName) {
             newVals[idx].mint += allVals[i].valueMint ? allVals[i].valueMint : 0;
             newVals[idx].burn += allVals[i].valueBurn ? allVals[i].valueBurn : 0;
             newVals[idx].transfer += allVals[i].valueTransfer ? allVals[i].valueTransfer : 0;
+
+            let idx2 = newCounts.findIndex(el => el.date == allVals[i].date)
+            newCounts[idx2].mint += allVals[i].valueMint ? allVals[i].count : 0;
+            newCounts[idx2].burn += allVals[i].valueBurn ? allVals[i].count : 0;
+            newCounts[idx2].transfer += allVals[i].valueTransfer ? allVals[i].count : 0;
+
         }
 
-        // count nb of transaction
-        let totalMintCount = 0;
-        let totalBurnCount = 0;
-        let totalTransfeCount = 0;
-        for (let i = 0; i < allVals.length; i++) {
-            totalMintCount += allVals[i].valueMint ? allVals[i].count : 0;
-            totalBurnCount += allVals[i].valueBurn ? allVals[i].count : 0;
-            totalTransfeCount += allVals[i].valueTransfer ? allVals[i].count : 0;
-        }
+        return [newVals, newCounts];
 
-        return [newVals, totalMintCount, totalBurnCount, totalTransfeCount];
     }).catch(err => {
         console.log(err)
         reject(err)
@@ -76,9 +75,7 @@ async function allTransactions(interval, dbName) {
     if (vals[0].length > 0) {
         return ({
             data: vals[0],
-            totalMintCount: vals[1],
-            totalBurnCount: vals[2],
-            totalTransfeCount: vals[3],
+            count: vals[1],
             msg: "Found Data"
         });
     } else {
@@ -96,7 +93,8 @@ async function transactions(interval, dbName, type) {
                 sql = `SELECT LEFT(block_signed_at, 10) AS date, sum(val2) as value, count(*) as count
                     FROM ${dbName}
                     where tx_type = '${type}'
-                    group by date;
+                    group by date
+                    order by date;
                     `
                 break;
             case "Weekly":
@@ -112,14 +110,16 @@ async function transactions(interval, dbName, type) {
                 sql = `SELECT LEFT(block_signed_at, 7) AS date, sum(val2) as value, count(*) as count
                     FROM ${dbName}
                     where tx_type = '${type}'
-                    group by date;
+                    group by date
+                    order by date;
                     `;
                 break;
             default:
                 sql = `SELECT LEFT(block_signed_at, 7) AS date, sum(val2) as value, count(*) as count
                     FROM ${dbName}
                     where tx_type = '${type}'
-                    group by date;
+                    group by date
+                    order by date;
                     `;
         }
 

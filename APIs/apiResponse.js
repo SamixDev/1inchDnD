@@ -25,7 +25,7 @@ exports.successResponseWithDataAndTotal = function (res, msg, data, total) {
 	};
 	return res.status(200).json(resData);
 };
-exports.successResponseWithDataAndAllTotalsAndCounts = function (res, msg, data,
+exports.successResponseWithDataAndAllTotalsAndCounts = function (res, msg, data, count,
 	totalMint, totalBurn, totalTransfer,
 	totalMintCount, totalBurnCount, totalTransferCount) {
 	var resData = {
@@ -37,7 +37,8 @@ exports.successResponseWithDataAndAllTotalsAndCounts = function (res, msg, data,
 		totalMintCount: totalMintCount,
 		totalBurnCount: totalBurnCount,
 		totalTransferCount: totalTransferCount,
-		data: data
+		data: data,
+		count: count
 	};
 	return res.status(200).json(resData);
 };

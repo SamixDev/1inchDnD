@@ -26,7 +26,7 @@ router.get('/allTnx', async (req, res) => {
         default:
             dbName = 'transactions_eth';
     }
-    allTransactions(interval, dbName).then(({ data, msg }) => {
+    allTransactions(interval, dbName).then(({ data, totalMintCount, totalBurnCount, totalTransfeCount, msg }) => {
 
         let totalMint = 0;
         let totalBurn = 0;
@@ -37,7 +37,9 @@ router.get('/allTnx', async (req, res) => {
             totalTransfer += element.transfer
         });
 
-        apiResponse.successResponseWithDataAndAllTotals(res, msg, data, totalMint, totalBurn, totalTransfer);
+        apiResponse.successResponseWithDataAndAllTotalsAndCounts(res, msg, data,
+            totalMint, totalBurn, totalTransfer,
+            totalMintCount, totalBurnCount, totalTransfeCount);
 
     }).catch(err => {
         console.log("error")

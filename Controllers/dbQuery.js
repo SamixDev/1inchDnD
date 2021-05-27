@@ -7,7 +7,7 @@ async function allTransactions(interval, dbName) {
             let finalRes = [];
             if (result.data.length > 0) {
                 result.data.forEach(element => {
-                    finalRes.push({ date: element.date, valueMint: element.value })
+                    finalRes.push({ date: element.date, valueMint: element.value, count: element.count })
                 });
             }
             resolve(finalRes)
@@ -19,7 +19,7 @@ async function allTransactions(interval, dbName) {
             let finalRes = [];
             if (result.data.length > 0) {
                 result.data.forEach(element => {
-                    finalRes.push({ date: element.date, valueBurn: element.value })
+                    finalRes.push({ date: element.date, valueBurn: element.value, count: element.count })
                 });
             }
             resolve(finalRes)
@@ -30,7 +30,7 @@ async function allTransactions(interval, dbName) {
             let finalRes = [];
             if (result.data.length > 0) {
                 result.data.forEach(element => {
-                    finalRes.push({ date: element.date, valueTransfer: element.value })
+                    finalRes.push({ date: element.date, valueTransfer: element.value, count: element.count })
                 });
             }
             resolve(finalRes)
@@ -40,7 +40,6 @@ async function allTransactions(interval, dbName) {
 
         // join all arrays
         let allVals = [...values[0], ...values[1], ...values[2]];
-
         // get all unique dates
         const uniqueDate = [...new Set(allVals.map(item => item.date))];
 
@@ -58,13 +57,30 @@ async function allTransactions(interval, dbName) {
             newVals[idx].transfer += allVals[i].valueTransfer ? allVals[i].valueTransfer : 0;
         }
 
-        return newVals;
+        // count nb of transaction
+        let totalMintCount = 0;
+        let totalBurnCount = 0;
+        let totalTransfeCount = 0;
+        for (let i = 0; i < allVals.length; i++) {
+            totalMintCount += allVals[i].valueMint ? allVals[i].count : 0;
+            totalBurnCount += allVals[i].valueBurn ? allVals[i].count : 0;
+            totalTransfeCount += allVals[i].valueTransfer ? allVals[i].count : 0;
+        }
+
+        return [newVals, totalMintCount, totalBurnCount, totalTransfeCount];
     }).catch(err => {
         console.log(err)
         reject(err)
     });
-    if (vals.length > 0) {
-        return ({ data: vals, msg: "Found Data" });
+
+    if (vals[0].length > 0) {
+        return ({
+            data: vals[0],
+            totalMintCount: vals[1],
+            totalBurnCount: vals[2],
+            totalTransfeCount: vals[3],
+            msg: "Found Data"
+        });
     } else {
         return ({ data: [], msg: "No Data" });
     }
@@ -77,7 +93,7 @@ async function transactions(interval, dbName, type) {
         let sql;
         switch (interval) {
             case "Daily":
-                sql = `SELECT LEFT(block_signed_at, 10) AS date, sum(val2) as value
+                sql = `SELECT LEFT(block_signed_at, 10) AS date, sum(val2) as value, count(*) as count
                     FROM ${dbName}
                     where tx_type = '${type}'
                     group by date;
@@ -86,21 +102,21 @@ async function transactions(interval, dbName, type) {
             case "Weekly":
                 sql = `SELECT
                     LEFT(STR_TO_DATE(CONCAT(YEARWEEK(block_signed_at, 0), ' ', 'Saturday'), '%X%V %W'),10) AS date,
-                    sum(val2) as value
+                    sum(val2) as value, count(*) as count
                     FROM ${dbName}
                     where tx_type = '${type}'
                     GROUP BY date
                     ORDER BY date;`
                 break;
             case "Monthly":
-                sql = `SELECT LEFT(block_signed_at, 7) AS date, sum(val2) as value
+                sql = `SELECT LEFT(block_signed_at, 7) AS date, sum(val2) as value, count(*) as count
                     FROM ${dbName}
                     where tx_type = '${type}'
                     group by date;
                     `;
                 break;
             default:
-                sql = `SELECT LEFT(block_signed_at, 7) AS date, sum(val2) as value
+                sql = `SELECT LEFT(block_signed_at, 7) AS date, sum(val2) as value, count(*) as count
                     FROM ${dbName}
                     where tx_type = '${type}'
                     group by date;

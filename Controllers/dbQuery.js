@@ -43,14 +43,12 @@ async function allTransactions(interval, dbName) {
 
         // get all unique dates
         const uniqueDate = [...new Set(allVals.map(item => item.date))];
-        console.log(uniqueDate)
 
         // create new values
         let newVals = [];
         uniqueDate.forEach(element => {
             newVals.push({ date: element, mint: 0, burn: 0, transfer: 0 })
         });
-        console.log(newVals)
 
         // merge unique dates with new values
         for (let i = 0; i < allVals.length; i++) {
@@ -59,7 +57,6 @@ async function allTransactions(interval, dbName) {
             newVals[idx].burn += allVals[i].valueBurn ? allVals[i].valueBurn : 0;
             newVals[idx].transfer += allVals[i].valueTransfer ? allVals[i].valueTransfer : 0;
         }
-        console.log(newVals)
 
         return newVals;
     }).catch(err => {

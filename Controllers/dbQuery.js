@@ -73,7 +73,7 @@ async function allTransactions(interval, dbName) {
         reject(err)
     });
 
-    if (vals[0].length > 0) {
+    if (vals[0].length > 0 && vals[1].length > 0) {
         return ({
             data: vals[0],
             count: vals[1],

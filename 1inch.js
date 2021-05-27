@@ -11,14 +11,14 @@ const { UpdateDataEth, UpdateDataBsc, UpdateDataPol } = require("./Controllers/d
 app.use('/api', router);
 
 //Update Database
-// function updateData() {
-//     console.log("------------------------------------------------")
-//     UpdateDataEth();
-//     UpdateDataBsc();
-//     UpdateDataPol();
-//     setTimeout(updateData, 1000 * 60 * 3);
-// }
-// updateData();
+function updateData() {
+    console.log("------------------------------------------------")
+    UpdateDataEth();
+    UpdateDataBsc();
+    UpdateDataPol();
+    setTimeout(updateData, 1000 * 60 * 3);
+}
+updateData();
 
 // serving webpage files
 app.use(express.json());

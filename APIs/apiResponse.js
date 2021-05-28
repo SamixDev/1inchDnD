@@ -16,6 +16,16 @@ exports.successResponseWithData = function (res, msg, data) {
 };
 
 // custom by me
+exports.successResponseWithDataAndTotalSupply = function (res, msg, data, total_supply) {
+	var resData = {
+		status: 1,
+		message: msg,
+		total_supply: total_supply,
+		data: data
+	};
+	return res.status(200).json(resData);
+};
+
 exports.successResponseWithDataAndTotal = function (res, msg, data, total) {
 	var resData = {
 		status: 1,
@@ -25,6 +35,7 @@ exports.successResponseWithDataAndTotal = function (res, msg, data, total) {
 	};
 	return res.status(200).json(resData);
 };
+
 exports.successResponseWithDataAndAllTotalsAndCounts = function (res, msg, data, count,
 	totalMint, totalBurn, totalTransfer,
 	totalMintCount, totalBurnCount, totalTransferCount) {

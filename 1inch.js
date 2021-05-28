@@ -6,6 +6,7 @@ const path = require('path');
 const apiResponse = require("./APIs/apiResponse");
 const router = require("./APIs/routes")
 const { UpdateDataEth, UpdateDataBsc, UpdateDataPol } = require("./Controllers/dbUpdate")
+const { getTopHolders } = require("./Controllers/tnxFetch")
 
 // routing APIs
 app.use('/api', router);
@@ -19,6 +20,16 @@ function updateData() {
     setTimeout(updateData, 1000 * 60 * 3);
 }
 updateData();
+
+//Update tokenHolders
+function updateData2() {
+    getTopHolders(1);
+    getTopHolders(56);
+    getTopHolders(137);
+    setTimeout(updateData2, 1000 * 60 * 30);
+}
+updateData2();
+
 
 // serving webpage files
 app.use(express.json());

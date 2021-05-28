@@ -2,6 +2,86 @@
 const axios = require('axios');
 const { connect } = require('../DataBase/connectSQL');
 
+async function getTopHolders(chainId) {
+
+    axios.get(`${process.env.COV_API}/${chainId}/tokens/${process.env.CHI_ADDRESS}
+    /token_holders/?block-height=latest&page-size=10&key=${process.env.KEY}`)
+        .then(response => {
+            console.log("received holders for chain", chainId)
+            switch (chainId) {
+                case 1: // eth
+                    if ((response.data.data.items) && (response.data.data.items.length > 0)) {
+                        var sql = "DELETE FROM holders_eth"
+                        connect(sql).then(resp => {
+                            for (let i = 0; i < response.data.data.items.length; i++) {
+                                var sql2 = `INSERT INTO holders_eth VALUES('${response.data.data.items[i].address}',
+                             '${response.data.data.items[i].balance}','${response.data.data.items[i].total_supply}')`
+                                connect(sql2).then(resp => {
+                                    //console.log("saved to db @ " + Date.now())
+                                }).catch(err => {
+                                    console.log(err)
+                                });
+                            }
+
+                        }).catch(err => {
+                            console.log(err)
+                        });
+
+
+                    }
+                    break;
+                case 56: // bsc
+                    if ((response.data.data.items) && (response.data.data.items.length > 0)) {
+                        var sql = "DELETE FROM holders_bsc"
+                        connect(sql).then(resp => {
+                            for (let i = 0; i < response.data.data.items.length; i++) {
+                                var sql2 = `INSERT INTO holders_bsc VALUES('${response.data.data.items[i].address}',
+                             '${response.data.data.items[i].balance}','${response.data.data.items[i].total_supply}')`
+                                connect(sql2).then(resp => {
+                                    //console.log("saved to db @ " + Date.now())
+                                }).catch(err => {
+                                    console.log(err)
+                                });
+                            }
+
+                        }).catch(err => {
+                            console.log(err)
+                        });
+
+
+                    }
+                    break;
+                case 137: // polygon
+                    if ((response.data.data.items) && (response.data.data.items.length > 0)) {
+                        var sql = "DELETE FROM holders_pol"
+                        connect(sql).then(resp => {
+                            for (let i = 0; i < response.data.data.items.length; i++) {
+                                var sql2 = `INSERT INTO holders_pol VALUES('${response.data.data.items[i].address}',
+                             '${response.data.data.items[i].balance}','${response.data.data.items[i].total_supply}')`
+                                connect(sql2).then(resp => {
+                                    //console.log("saved to db @ " + Date.now())
+                                }).catch(err => {
+                                    console.log(err)
+                                });
+                            }
+
+                        }).catch(err => {
+                            console.log(err)
+                        });
+
+
+                    }
+                    break;
+                default:
+            }
+        }).catch(function (error) {
+            if (error.code === 'ECONNABORTED') {
+                console.log(`A timeout happend on url ${error.config.url}`)
+            }
+        });
+
+};
+
 async function getTransfers(starting, ending, chainId) {
 
     axios.get(`${process.env.COV_API}/${chainId}/events/address/
@@ -70,4 +150,4 @@ async function checkType(val0, val1) {
     return type;
 };
 
-module.exports = { getTransfers }
+module.exports = { getTransfers, getTopHolders }

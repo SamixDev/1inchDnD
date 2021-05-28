@@ -1,7 +1,7 @@
 const express = require('express');
 const apiResponse = require("./apiResponse");
 const router = express.Router();
-const { transactions, transactionsNumber, allTransactions } = require('../Controllers/dbQuery')
+const { transactions, transactionsNumber, allTransactions, tokenHolders, top10 } = require('../Controllers/dbQuery')
 const axios = require('axios');
 require('dotenv').config();
 
@@ -52,6 +52,56 @@ router.get('/allTnx', async (req, res) => {
 
     }).catch(err => {
         console.log("error")
+        apiResponse.ErrorResponse(err)
+    })
+});
+
+router.get('/holders', async (req, res) => {
+
+    let chainId = req.query.chainId
+    let dbName;
+    chainId === undefined ? 1 : chainId = Number(chainId.replace(/'|"/g, ""))
+
+    switch (chainId) {
+        case 1: // eth
+            dbName = 'transactions_eth';
+            break;
+        case 56: // bsc
+            dbName = 'transactions_bsc';
+            break;
+        case 137: // polygon
+            dbName = 'transactions_pol';
+            break;
+        default:
+            dbName = 'transactions_eth';
+    }
+    tokenHolders(dbName).then(({ data, msg }) => {
+        apiResponse.successResponseWithData(res, msg, data);
+    }).catch(err => {
+        apiResponse.ErrorResponse(err)
+    })
+});
+
+router.get('/top10', async (req, res) => {
+
+    let chainId = req.query.chainId
+    chainId === undefined ? 1 : chainId = Number(chainId.replace(/'|"/g, ""))
+    switch (chainId) {
+        case 1: // eth
+            dbName = 'holders_eth';
+            break;
+        case 56: // bsc
+            dbName = 'holders_bsc';
+            break;
+        case 137: // polygon
+            dbName = 'holders_pol';
+            break;
+        default:
+            dbName = 'holders_eth';
+    }
+    top10(dbName).then(({ data, msg }) => {
+        apiResponse.successResponseWithData(res, msg, data);
+    }).catch(err => {
         apiResponse.ErrorResponse(err)
     })
 });

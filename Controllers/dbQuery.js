@@ -1,4 +1,5 @@
 const { connect } = require('../DataBase/connectSQL');
+const axios = require('axios');
 
 // all transactions for a specific chainID
 async function allTransactions(interval, dbName) {
@@ -266,4 +267,48 @@ async function transactionsNumber(interval, dbName, type) {
     });
 };
 
-module.exports = { transactions, transactionsNumber, allTransactions, tokenHolders, top10 }
+//prices
+async function allPrices() {
+    const promise1 = new Promise((resolve, reject) => {
+        axios.get(`${process.env.COV_API}/pricing/historical_by_addresses_v2/1/usd/${process.env.CHI_ADDRESS}/?key=${process.env.KEY}`
+            , { timeout: 30000 })
+            .then(response => {
+                resolve({ chainId: 1, price: response.data.data[0].prices[0].price })
+            }).catch(err => {
+                reject("error")
+            });
+    });
+    const promise2 = new Promise((resolve, reject) => {
+        axios.get(`${process.env.COV_API}/pricing/historical_by_addresses_v2/56/usd/${process.env.CHI_ADDRESS}/?key=${process.env.KEY}`
+            , { timeout: 30000 })
+            .then(response => {
+                resolve({ chainId: 56, price: response.data.data[0].prices[0].price })
+            }).catch(err => {
+                reject("error")
+            });
+    });
+    const promise3 = new Promise((resolve, reject) => {
+        axios.get(`${process.env.COV_API}/pricing/historical_by_addresses_v2/137/usd/${process.env.CHI_ADDRESS}/?key=${process.env.KEY}`
+            , { timeout: 30000 })
+            .then(response => {
+                resolve({ chainId: 137, price: response.data.data[0].prices[0].price })
+            }).catch(err => {
+                reject("error")
+            });
+    });
+    let vals = await Promise.all([promise1, promise2, promise3]).then((values) => {
+
+        return values;
+
+    }).catch(err => {
+        console.log(err)
+        reject(err)
+    });
+
+    return ({
+        data: vals,
+        msg: "Found Data"
+    });
+};
+
+module.exports = { transactions, transactionsNumber, allTransactions, tokenHolders, top10, allPrices }

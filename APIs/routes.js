@@ -100,16 +100,21 @@ router.get('/top10', async (req, res) => {
             dbName = 'holders_eth';
     }
     top10(dbName).then(({ data, msg }) => {
-        let newHolders = [];
-        const totalSupply = data[0].total_supply;
-        data.forEach(element => {
-            newHolders.push({
-                address: element.address,
-                balance: element.balance,
-                ratio: Number((element.balance * 100 / element.total_supply).toFixed(2))
-            })
-        });
-        apiResponse.successResponseWithDataAndTotalSupply(res, msg, newHolders, totalSupply);
+        if (!(data == '')) {
+            let newHolders = [];
+            const totalSupply = data[0].total_supply;
+            data.forEach(element => {
+                newHolders.push({
+                    address: element.address,
+                    balance: element.balance,
+                    ratio: Number((element.balance * 100 / element.total_supply).toFixed(2))
+                })
+            });
+            apiResponse.successResponseWithDataAndTotalSupply(res, msg, newHolders, totalSupply);
+        } else {
+            apiResponse.successResponseWithDataAndTotalSupply(res, msg, data, 0);
+        }
+
     }).catch(err => {
         apiResponse.ErrorResponse(err)
     })

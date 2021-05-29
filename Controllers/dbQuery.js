@@ -86,59 +86,18 @@ async function allTransactions(interval, dbName) {
 
 };
 
-// token holders
-async function tokenHolders(dbName) {
+// number of token holders who burned chi
+async function holdersBurned(dbName) {
     return new Promise((resolve, reject) => {
         let sql;
-        sql = `SELECT  val0 as sender, val1 as receiver, sum(val2) as val
+        sql = `SELECT  count(DISTINCT val0) as holders, sum(val2) as value
                 FROM ${dbName}
-                group by val0,val1 ;`
-        console.time("get data");
+                where val1 = '0x0000000000000000000000000000000000000000'`
         connect(sql).then(resp => {
             if (resp == '') {
                 resolve({ data: [], msg: "No Data" })
             } else {
-                console.timeEnd("get data");
-                // get unique addresses
-                console.time("make SET");
-                const uniqueHolder1 = [...new Set(resp.map(item => item.sender))];
-                const uniqueHolder2 = [...new Set(resp.map(item => item.receiver))];
-                let uniqueArr = uniqueHolder1.concat(uniqueHolder2)
-                const uniqueHolder = [...new Set(uniqueArr)]
-                //   console.log(uniqueHolder)
-                console.timeEnd("make SET");
-
-                // create new values
-                console.time("make Unique array");
-                let newVals = [];
-                uniqueHolder.forEach(element => {
-                    newVals.push({ holder: element, send: 0, receive: 0, balance: 0 })
-                });
-                console.timeEnd("make Unique array");
-
-                console.time("merge");
-                // merge unique adresses with new values
-                for (let i = 0; i < resp.length; i++) {
-
-                    let tnxFrom = newVals.findIndex(el => el.holder == resp[i].sender)
-                    let tnxTo = newVals.findIndex(el => el.holder == resp[i].receiver)
-
-                    if (!(tnxFrom == -1)) {
-                        newVals[tnxFrom].send += resp[i].val
-                    }
-                    if (!(tnxTo == -1)) {
-                        newVals[tnxTo].receive += resp[i].val
-                    }
-
-                }
-                console.timeEnd("merge");
-
-                console.time("balance");
-                for (let j = 0; j < newVals.length; j++) {
-                    newVals[j].balance = newVals[j].receive - newVals[j].send
-                }
-                console.timeEnd("balance");
-                resolve({ data: newVals, msg: "Data Found" })
+                resolve({ data: resp, msg: "Data Found" })
             }
         }).catch(err => {
             console.log(err)
@@ -267,7 +226,7 @@ async function transactionsNumber(interval, dbName, type) {
     });
 };
 
-//prices
+//all CHI prices
 async function allPrices() {
     const promise1 = new Promise((resolve, reject) => {
         axios.get(`${process.env.COV_API}/pricing/historical_by_addresses_v2/1/usd/${process.env.CHI_ADDRESS}/?key=${process.env.KEY}`
@@ -311,4 +270,4 @@ async function allPrices() {
     });
 };
 
-module.exports = { transactions, transactionsNumber, allTransactions, tokenHolders, top10, allPrices }
+module.exports = { transactions, transactionsNumber, allTransactions, holdersBurned, top10, allPrices }

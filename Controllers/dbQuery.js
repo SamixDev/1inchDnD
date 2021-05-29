@@ -86,11 +86,12 @@ async function allTransactions(interval, dbName) {
 
 };
 
-// number of token holders who burned chi
-async function holdersBurned(dbName) {
-    return new Promise((resolve, reject) => {
+// number of token holders who burned and minted chi
+async function holdersBMT(dbName) {
+    // burned
+    const promise1 = new Promise((resolve, reject) => {
         let sql;
-        sql = `SELECT  count(DISTINCT val0) as holders, sum(val2) as value
+        sql = `SELECT  count(DISTINCT val0) as holders
                 FROM ${dbName}
                 where val1 = '0x0000000000000000000000000000000000000000'`
         connect(sql).then(resp => {
@@ -104,7 +105,62 @@ async function holdersBurned(dbName) {
             reject(err)
         });
     });
+
+    //minted
+    const promise2 = new Promise((resolve, reject) => {
+        let sql;
+        sql = `SELECT  count(DISTINCT val1) as holders
+                FROM ${dbName}
+                where val0 = '0x0000000000000000000000000000000000000000'`
+        connect(sql).then(resp => {
+            if (resp == '') {
+                resolve({ data: [], msg: "No Data" })
+            } else {
+                resolve({ data: resp, msg: "Data Found" })
+            }
+        }).catch(err => {
+            console.log(err)
+            reject(err)
+        });
+    });
+
+    // transferred
+    const promise3 = new Promise((resolve, reject) => {
+        let sql;
+        sql = `SELECT  count(DISTINCT val0) as holders
+                FROM ${dbName}
+                where val0 <> '0x0000000000000000000000000000000000000000' and val1 <> '0x0000000000000000000000000000000000000000'`
+        connect(sql).then(resp => {
+            if (resp == '') {
+                resolve({ data: [], msg: "No Data" })
+            } else {
+                resolve({ data: resp, msg: "Data Found" })
+            }
+        }).catch(err => {
+            console.log(err)
+            reject(err)
+        });
+    });
+
+    let vals = await Promise.all([promise1, promise2, promise3]).then((values) => {
+
+        return ({
+            holders_burned: values[0].data[0].holders,
+            holders_minted: values[1].data[0].holders,
+            holders_transferred: values[2].data[0].holders
+        });
+
+    }).catch(err => {
+        console.log(err)
+        reject(err)
+    });
+
+    return ({
+        data: vals,
+        msg: "Found Data"
+    });
 };
+
 
 // top 10 token holders
 async function top10(dbName) {
@@ -270,4 +326,4 @@ async function allPrices() {
     });
 };
 
-module.exports = { transactions, transactionsNumber, allTransactions, holdersBurned, top10, allPrices }
+module.exports = { transactions, transactionsNumber, allTransactions, holdersBMT, top10, allPrices }

@@ -1,7 +1,7 @@
 const express = require('express');
 const apiResponse = require("./apiResponse");
 const router = express.Router();
-const { transactions, transactionsNumber, allTransactions, holdersBurned, top10, allPrices } = require('../Controllers/dbQuery')
+const { transactions, transactionsNumber, allTransactions, holdersBMT, top10, allPrices } = require('../Controllers/dbQuery')
 require('dotenv').config();
 
 router.get('/allTnx', async (req, res) => {
@@ -55,7 +55,7 @@ router.get('/allTnx', async (req, res) => {
     })
 });
 
-router.get('/holdersBurned', async (req, res) => {
+router.get('/holdersNumber', async (req, res) => {
 
     let chainId = req.query.chainId
     let dbName;
@@ -74,7 +74,7 @@ router.get('/holdersBurned', async (req, res) => {
         default:
             dbName = 'transactions_eth';
     }
-    holdersBurned(dbName).then(({ data, msg }) => {
+    holdersBMT(dbName).then(({ data, msg }) => {
         apiResponse.successResponseWithData(res, msg, data);
     }).catch(err => {
         apiResponse.ErrorResponse(err)

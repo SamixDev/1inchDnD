@@ -166,7 +166,7 @@ async function holdersBMT(dbName) {
 async function top10(dbName) {
     return new Promise((resolve, reject) => {
         let sql;
-        sql = `SELECT *
+        sql = `SELECT address, convert(balance, SIGNED) as balance, total_supply
                 FROM ${dbName}  order by balance desc ;`
         connect(sql).then(resp => {
             if (resp == '') {

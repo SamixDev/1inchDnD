@@ -167,7 +167,7 @@ async function top10(dbName) {
     return new Promise((resolve, reject) => {
         let sql;
         sql = `SELECT *
-                FROM ${dbName};`
+                FROM ${dbName}  order by balance desc ;`
         connect(sql).then(resp => {
             if (resp == '') {
                 resolve({ data: [], msg: "No Data" })

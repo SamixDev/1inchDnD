@@ -15,8 +15,8 @@ app.use('/api', router);
 function updateData() {
     console.log("------------------------------------------------")
     UpdateDataEth();
-    UpdateDataBsc();
-    UpdateDataPol();
+    //UpdateDataBsc();
+    //UpdateDataPol();
     setTimeout(updateData, 1000 * 60 * 3);
 }
 updateData();
@@ -24,8 +24,8 @@ updateData();
 //Update tokenHolders
 function updateData2() {
     getTopHolders(1);
-    getTopHolders(56);
-    getTopHolders(137);
+    // getTopHolders(56);
+    // getTopHolders(137);
     setTimeout(updateData2, 1000 * 60 * 30);
 }
 updateData2();

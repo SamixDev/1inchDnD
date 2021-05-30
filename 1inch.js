@@ -33,9 +33,9 @@ updateData2();
 
 // serving webpage files
 app.use(express.json());
-app.use(express.static("Client/balnwatch/build"));
+app.use(express.static("Client/1inch/build"));
 app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, '/Client/balnwatch/build/', 'index.html'), function (err) {
+    res.sendFile(path.join(__dirname, '/Client/1inch/build/', 'index.html'), function (err) {
         if (err) {
             apiResponse.notFoundResponse(res, "404 Page not found")
         }

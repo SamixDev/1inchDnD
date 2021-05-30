@@ -12,6 +12,8 @@ async function getTopHolders(chainId) {
                 case 1: // eth
                     if ((response.data.data.items) && (response.data.data.items.length > 0)) {
                         var sql = "DELETE FROM holders_eth"
+                        var sql_update = `UPDATE allholders SET value='${response.data.data.pagination.total_count}'
+                                            where name = "ETH";`
                         connect(sql).then(resp => {
                             for (let i = 0; i < response.data.data.items.length; i++) {
                                 var sql2 = `INSERT INTO holders_eth VALUES('${response.data.data.items[i].address}',
@@ -26,13 +28,18 @@ async function getTopHolders(chainId) {
                         }).catch(err => {
                             console.log(err)
                         });
-
+                        connect(sql_update).then(resp => {
+                        }).catch(err => {
+                            console.log(err)
+                        });
 
                     }
                     break;
                 case 56: // bsc
                     if ((response.data.data.items) && (response.data.data.items.length > 0)) {
                         var sql = "DELETE FROM holders_bsc"
+                        var sql_update = `UPDATE allholders SET value='${response.data.data.pagination.total_count}'
+                                            where name = "BSC";`
                         connect(sql).then(resp => {
                             for (let i = 0; i < response.data.data.items.length; i++) {
                                 var sql2 = `INSERT INTO holders_bsc VALUES('${response.data.data.items[i].address}',
@@ -47,13 +54,18 @@ async function getTopHolders(chainId) {
                         }).catch(err => {
                             console.log(err)
                         });
-
+                        connect(sql_update).then(resp => {
+                        }).catch(err => {
+                            console.log(err)
+                        });
 
                     }
                     break;
                 case 137: // polygon
                     if ((response.data.data.items) && (response.data.data.items.length > 0)) {
                         var sql = "DELETE FROM holders_pol"
+                        var sql_update = `UPDATE allholders SET value='${response.data.data.pagination.total_count}'
+                                            where name = "POL";`
                         connect(sql).then(resp => {
                             for (let i = 0; i < response.data.data.items.length; i++) {
                                 var sql2 = `INSERT INTO holders_pol VALUES('${response.data.data.items[i].address}',
@@ -68,7 +80,10 @@ async function getTopHolders(chainId) {
                         }).catch(err => {
                             console.log(err)
                         });
-
+                        connect(sql_update).then(resp => {
+                        }).catch(err => {
+                            console.log(err)
+                        });
 
                     }
                     break;

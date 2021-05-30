@@ -59,22 +59,27 @@ router.get('/holdersNumber', async (req, res) => {
 
     let chainId = req.query.chainId
     let dbName;
+    let dbName2;
     chainId === undefined ? 1 : chainId = Number(chainId.replace(/'|"/g, ""))
 
     switch (chainId) {
         case 1: // eth
             dbName = 'transactions_eth';
+            dbName2 = 'ETH';
             break;
         case 56: // bsc
             dbName = 'transactions_bsc';
+            dbName2 = 'BSC';
             break;
         case 137: // polygon
             dbName = 'transactions_pol';
+            dbName2 = 'POL';
             break;
         default:
             dbName = 'transactions_eth';
+            dbName2 = 'ETH';
     }
-    holdersBMT(dbName).then(({ data, msg }) => {
+    holdersBMT(dbName, dbName2).then(({ data, msg }) => {
         apiResponse.successResponseWithData(res, msg, data);
     }).catch(err => {
         apiResponse.ErrorResponse(err)

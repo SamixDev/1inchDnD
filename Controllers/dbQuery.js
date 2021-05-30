@@ -87,7 +87,7 @@ async function allTransactions(interval, dbName) {
 };
 
 // number of token holders who burned and minted chi
-async function holdersBMT(dbName) {
+async function holdersBMT(dbName, dbName2) {
     // burned
     const promise1 = new Promise((resolve, reject) => {
         let sql;
@@ -127,7 +127,7 @@ async function holdersBMT(dbName) {
     // transferred
     const promise3 = new Promise((resolve, reject) => {
         let sql;
-        sql = `SELECT  count(DISTINCT val0) as holders
+        sql = `SELECT count(DISTINCT val0) as holders1,count(DISTINCT val1) as holders2
                 FROM ${dbName}
                 where val0 <> '0x0000000000000000000000000000000000000000' and val1 <> '0x0000000000000000000000000000000000000000'`
         connect(sql).then(resp => {
@@ -142,12 +142,30 @@ async function holdersBMT(dbName) {
         });
     });
 
-    let vals = await Promise.all([promise1, promise2, promise3]).then((values) => {
+    // holders
+    const promise4 = new Promise((resolve, reject) => {
+        let sql;
+        sql = `SELECT value
+            FROM allholders where name = '${dbName2}';`
+        connect(sql).then(resp => {
+            if (resp == '') {
+                resolve({ data: [], msg: "No Data" })
+            } else {
+                resolve({ data: resp, msg: "Data Found" })
+            }
+        }).catch(err => {
+            console.log(err)
+            reject(err)
+        });
+    });
+
+    let vals = await Promise.all([promise1, promise2, promise3, promise4]).then((values) => {
 
         return ({
             holders_burned: values[0].data[0].holders,
             holders_minted: values[1].data[0].holders,
-            holders_transferred: values[2].data[0].holders
+            holders_transferred: values[2].data[0].holders1 + values[2].data[0].holders2,
+            holders: Number(values[3].data[0].value)
         });
 
     }).catch(err => {

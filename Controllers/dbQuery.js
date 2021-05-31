@@ -344,4 +344,29 @@ async function allPrices() {
     });
 };
 
-module.exports = { transactions, transactionsNumber, allTransactions, holdersBMT, top10, allPrices }
+// chi price and stats on eth
+async function stats() {
+    return new Promise((resolve, reject) => {
+        axios.get(`${process.env.COV_API}/pricing/tickers/?tickers=chi&key=${process.env.KEY}`
+            , { timeout: 30000 })
+            .then(response => {
+                if (response.data && response.data.data && response.data.data.items[0]) {
+                    let stats = {
+                        price: Number((response.data.data.items[0].quote_rate).toFixed(5)),
+                        rank: response.data.data.items[0].rank
+                    }
+                    resolve({ data: stats, msg: "Data Found" })
+                } else {
+                    resolve({ data: [], msg: "Data Unavailable" })
+                }
+            }).catch(function (error) {
+                if (error.code === 'ECONNABORTED') {
+                    console.log(`A timeout happend on url ${error.config.url}`)
+                }
+                let msg = "ERROR RESPONSE 500"
+                reject(msg)
+            });
+    });
+};
+
+module.exports = { transactions, transactionsNumber, allTransactions, holdersBMT, top10, allPrices, stats }

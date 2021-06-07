@@ -346,13 +346,14 @@ async function allPrices() {
 
 // chi price and stats on eth
 async function stats() {
+    const altQuote = await altPrice();
     return new Promise((resolve, reject) => {
         axios.get(`${process.env.COV_API}/pricing/tickers/?tickers=chi&key=${process.env.KEY}`
             , { timeout: 30000 })
             .then(response => {
                 if (response.data && response.data.data && response.data.data.items[0]) {
                     let stats = {
-                        price: Number((response.data.data.items[0].quote_rate).toFixed(5)),
+                        price: response.data.data.items[0].quote_rate ? Number((response.data.data.items[0].quote_rate).toFixed(5)) : altQuote,
                         rank: response.data.data.items[0].rank
                     }
                     resolve({ data: stats, msg: "Data Found" })
@@ -365,6 +366,27 @@ async function stats() {
                 }
                 let msg = "ERROR RESPONSE 500"
                 reject(msg)
+            });
+    });
+
+};
+
+// alternative method to get price
+async function altPrice() {
+    return new Promise((resolve, reject) => {
+        axios.get(`${process.env.COV_API}/pricing/historical_by_addresses_v2/1/usd/${process.env.CHI_ADDRESS}/?&key=${process.env.KEY}`
+            , { timeout: 30000 })
+            .then(response => {
+                if (response.data && response.data.data[0] && response.data.data[0].prices[0]) {
+                    resolve(Number((response.data.data[0].prices[0].price).toFixed(5)))
+                } else {
+                    resolve(null)
+                }
+            }).catch(function (error) {
+                if (error.code === 'ECONNABORTED') {
+                    console.log(`A timeout happend on url ${error.config.url}`)
+                }
+                resolve(null)
             });
     });
 };
